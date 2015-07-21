@@ -39,22 +39,26 @@ public class Product {
     }
 
     public static List<Product> findAll() {
-        return new ArrayList<>(products);
+        return new ArrayList<Product>(products);
     }
 
     public static Product findByEan(String ean) {
-        Optional<Product> candidate = products.stream().filter(p -> ean.equals(p.ean)).findFirst();
-        try {
-            return candidate.get();
-        } catch (NoSuchElementException e) {
-            Logger.info(String.format("No such product exists with ean: %s. Exception: %s", ean, e));
+        for (Product candidate : products) {
+            if (candidate.ean.equals(ean)) {
+                return candidate;
+            }
         }
         return null;
     }
 
     public static List<Product> findByName(String term) {
-        final List<Product> results = new ArrayList<>();
-        products.stream().filter(p -> term.toLowerCase().equals(p.name.toLowerCase())).forEach(p -> results.add(p));
+        final List<Product> results = new ArrayList<Product>();
+        for (Product candidate : products) {
+            if (candidate.name.toLowerCase().contains(term.toLowerCase())) {
+                results.add(candidate);
+            }
+        }
+
         return results;
     }
 
