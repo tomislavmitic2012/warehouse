@@ -1,24 +1,12 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import org.junit.*;
-
-import play.mvc.*;
-import play.test.*;
-import play.data.DynamicForm;
-import play.data.validation.ValidationError;
-import play.data.validation.Constraints.RequiredValidator;
-import play.i18n.Lang;
-import play.libs.F;
-import play.libs.F.*;
+import org.junit.Test;
+import play.mvc.Http;
 import play.twirl.api.Html;
 
-import static play.test.Helpers.*;
-import static org.fest.assertions.Assertions.*;
-
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static play.test.Helpers.contentAsString;
+import static play.test.Helpers.contentType;
 
 /**
 *
@@ -36,6 +24,12 @@ public class ApplicationTest {
 
     @Test
     public void renderTemplate() {
+        Http.Context context = mock(Http.Context.class);
+        Http.Flash flash = mock(Http.Flash.class);
+        doReturn(flash).when(context).flash();
+        Http.Context.current.set(context);
+        Http.Context.current.set(context);
+
         Html html = views.html.index.render("Your new application is ready.");
         assertThat(contentType(html)).isEqualTo("text/html");
         assertThat(contentAsString(html)).contains("Your new application is ready.");

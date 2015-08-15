@@ -43,7 +43,7 @@ public class Products extends Controller {
         Product product = boundForm.get();
         product.save();
         flash("success", String.format("Successfully added product %s", product));
-        return redirect(routes.Products.list());
+        return redirect(controllers.routes.Products.list());
     }
 
     public static Result delete(String ean) {
@@ -52,6 +52,6 @@ public class Products extends Controller {
             return notFound(String.format("Product %s does not exist.", ean));
         }
         Product.remove(product);
-        return redirect(routes.Products.list());
+        return redirect(controllers.routes.Products.list());
     }
 }
