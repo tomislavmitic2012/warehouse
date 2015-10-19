@@ -1,34 +1,41 @@
 package models;
 
-import play.Logger;
+import org.apache.commons.lang3.StringUtils;
+import play.mvc.QueryStringBindable;
 import play.data.validation.Constraints;
+import play.libs.F;
+import play.mvc.PathBindable;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.Map;
 
 /**
- * Created by tomislav on 7/18/15.
+ * Created by Tomislav S. Mitic on 7/18/15.
  */
-public class Product {
+public class Product implements PathBindable<Product>, QueryStringBindable<Product> {
 
     private static List<Product> products;
 
     static {
         products = new ArrayList<>();
-        products.add(new Product("1111111111111", "Paperclips 1", "Paperclips description 1"));
-        products.add(new Product("2222222222222", "Paperclips 2", "Paperclips description 2"));
-        products.add(new Product("3333333333333", "Paperclips 3", "Paperclips description 3"));
-        products.add(new Product("4444444444444", "Paperclips 4", "Paperclips description 4"));
-        products.add(new Product("5555555555555", "Paperclips 5", "Paperclips description 5"));
+        products.add(new Product("1111111111111", "Paperclips 1", "Paperclips description 1"));
+        products.add(new Product("2222222222222", "Paperclips 2", "Paperclips description "));
+        products.add(new Product("3333333333333", "Paperclips 3", "Paperclips description 3"));
+        products.add(new Product("4444444444444", "Paperclips 4", "Paperclips description 4"));
+        products.add(new Product("5555555555555", "Paperclips 5", "Paperclips description 5"));
     }
 
     @Constraints.Required
     public String ean;
+
     @Constraints.Required
     public String name;
+
     public String description;
+
+    public List<Tag> tags = new LinkedList<>();
 
     public Product() {}
 
@@ -39,7 +46,7 @@ public class Product {
     }
 
     public static List<Product> findAll() {
-        return new ArrayList<Product>(products);
+        return new ArrayList<>(products);
     }
 
     public static Product findByEan(String ean) {
@@ -52,9 +59,9 @@ public class Product {
     }
 
     public static List<Product> findByName(String term) {
-        final List<Product> results = new ArrayList<Product>();
+        final List<Product> results = new ArrayList<>();
         for (Product candidate : products) {
-            if (candidate.name.toLowerCase().contains(term.toLowerCase())) {
+            if (StringUtils.containsIgnoreCase(candidate.name, term)) {
                 results.add(candidate);
             }
         }
@@ -73,5 +80,25 @@ public class Product {
 
     public String toString() {
         return String.format("%s - %s", ean, name);
+    }
+
+    @Override
+    public Product bind(String key, String txt) {
+        return this.findByEan(txt);
+    }
+
+    @Override
+    public F.Option<Product> bind(String key, Map<String, String[]> data) {
+        return F.Option.Some(this.findByEan(data.get("ean")[0]));
+    }
+
+    @Override
+    public String unbind(String key) {
+        return this.ean;
+    }
+
+    @Override
+    public String javascriptUnbind() {
+        return this.ean;
     }
 }

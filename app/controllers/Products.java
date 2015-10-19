@@ -2,6 +2,7 @@ package controllers;
 
 import interceptors.Catch;
 import models.Product;
+import models.Tag;
 import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
 import play.mvc.Controller;
@@ -9,6 +10,7 @@ import play.mvc.Result;
 import views.html.products.details;
 import views.html.products.list;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -53,6 +55,13 @@ public class Products extends Controller {
             return badRequest(details.render(boundForm));
         }
         Product product = boundForm.get();
+        List<Tag> tags = new ArrayList<>();
+        product.tags.stream().forEach(tag -> {
+            if (tag.id != null) {
+                tags.add(Tag.findById(tag.id));
+            }
+        });
+        product.tags = tags;
         product.save();
         flash("success", String.format("Successfully added product %s", product));
         return redirect(routes.Products.list(1));
