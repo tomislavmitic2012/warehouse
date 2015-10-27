@@ -14,13 +14,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static play.data.Form.form;
+
 /**
  * Created by Tomislav S. Mitic on 7/18/15.
  */
 @Catch(send = false)
 public class Products extends Controller {
 
-    private static final Form<Product> productForm = Form.form(Product.class);
+    private static final Form<Product> productForm = form(Product.class);
 
     public static Result index() {
         return redirect(routes.Products.list(1));
@@ -39,13 +41,10 @@ public class Products extends Controller {
         return ok(details.render(productForm));
     }
 
-    public static Result details(String ean) {
-        final Product product = Product.findByEan(ean);
-        if (product == null) {
-            return notFound(String.format("Product %s does not exist.", ean));
-        }
-        Form<Product> filledForm = productForm.fill(product);
-        return ok(details.render(filledForm));
+    // The product should automatically be looked up using the product's EAN key
+    public static Result details(Product product) {
+        Form<Product> fillerForm = productForm.fill(product);
+        return ok(details.render(fillerForm));
     }
 
     public static Result save() {

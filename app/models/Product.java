@@ -83,13 +83,14 @@ public class Product implements PathBindable<Product>, QueryStringBindable<Produ
     }
 
     @Override
-    public Product bind(String key, String txt) {
-        return this.findByEan(txt);
+    public Product bind(String pathKey, String eanValue
+    ) {
+        return this.findByEan(eanValue);
     }
 
     @Override
     public F.Option<Product> bind(String key, Map<String, String[]> data) {
-        return F.Option.Some(this.findByEan(data.get("ean")[0]));
+        return F.Option.Some(this.findByEan(data.get(key)[0]));
     }
 
     @Override
