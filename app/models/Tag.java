@@ -2,6 +2,9 @@ package models;
 
 import play.data.validation.Constraints;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,6 +12,7 @@ import java.util.List;
 /**
  * Created by Tom Mitic on 10/10/15.
  */
+@Entity
 public class Tag {
 
     private static List<Tag> tags = new LinkedList<>();
@@ -31,11 +35,13 @@ public class Tag {
         return null;
     }
 
+    @Id
     public Long id;
 
     @Constraints.Required
     public String name;
 
+    @ManyToMany(mappedBy = "tags")
     public List<Product> products;
 
     public Tag() {

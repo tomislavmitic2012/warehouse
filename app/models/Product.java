@@ -5,17 +5,20 @@ import play.data.validation.Constraints;
 import play.libs.F;
 import play.mvc.PathBindable;
 import play.mvc.QueryStringBindable;
+import utils.DateFormat;
 import utils.Validation.EAN;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
  * Created by Tomislav S. Mitic on 7/18/15.
  */
+@Entity
 public class Product implements PathBindable<Product>, QueryStringBindable<Product> {
 
     public static class EanValidator extends Constraints.Validator<String> {
@@ -45,6 +48,9 @@ public class Product implements PathBindable<Product>, QueryStringBindable<Produ
         products.add(new Product("5555555555555", "Paperclips 5", "Paperclips description 5"));
     }
 
+    @Id
+    public Long id;
+
     @Constraints.Required
     @EAN
     public String ean;
@@ -54,9 +60,18 @@ public class Product implements PathBindable<Product>, QueryStringBindable<Produ
 
     public String description;
 
+    public Date date = new Date();
+
+    @DateFormat("yyyy-MM-dd")
+    public Date peremptionDate = new Date();
+
+    @ManyToMany
     public List<Tag> tags = new LinkedList<>();
 
     public byte[] picture;
+
+    @OneToMany(mappedBy = "product")
+    public List<StockItem> stockItems;
 
     public Product() {}
 
@@ -99,6 +114,7 @@ public class Product implements PathBindable<Product>, QueryStringBindable<Produ
         products.add(this);
     }
 
+    @Override
     public String toString() {
         return String.format("%s - %s", ean, name);
     }
