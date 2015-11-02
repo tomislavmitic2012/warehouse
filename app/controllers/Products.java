@@ -1,15 +1,19 @@
 package controllers;
 
+import com.google.common.io.Files;
 import interceptors.Catch;
 import models.Product;
 import models.Tag;
 import org.apache.commons.lang3.StringUtils;
 import play.data.Form;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Result;
 import views.html.products.details;
 import views.html.products.list;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -54,6 +58,19 @@ public class Products extends Controller {
             return badRequest(details.render(boundForm));
         }
         Product product = boundForm.get();
+
+        // TODO you need to keep track of the previous product somehow
+        Http.MultipartFormData body = request().body().asMultipartFormData();
+        Http.MultipartFormData.FilePart part = body.getFile("picture");
+        if (part != null) {
+            File picture = part.getFile();
+            try {
+                product.picture = Files.toByteArray(picture);
+            } catch (IOException e) {
+                return internalServerError("Error reading file upload");
+            }
+        }
+
         List<Tag> tags = new ArrayList<>();
         product.tags.stream().forEach(tag -> {
             if (tag.id != null) {
@@ -73,5 +90,10 @@ public class Products extends Controller {
         }
         Product.remove(product);
         return redirect(routes.Products.list(1));
+    }
+
+    public static Result picture(String ean) {
+        final Product product = Product.findByEan(ean);
+        return product == null ? notFound() : ok(product.picture);
     }
 }

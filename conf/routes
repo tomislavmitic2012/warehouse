@@ -10,6 +10,7 @@ GET           /products/new         controllers.Products.newProduct()
 GET           /products/:ean        controllers.Products.details(ean: models.Product)
 GET           /products             controllers.Products.details(ean: models.Product)
 DELETE        /products/:ean        controllers.Products.delete(ean: String)
+GET           /picture/:ean         controllers.Products.picture(ean: String)
 
 
 

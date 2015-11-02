@@ -1,20 +1,38 @@
 package models;
 
 import org.apache.commons.lang3.StringUtils;
-import play.mvc.QueryStringBindable;
 import play.data.validation.Constraints;
 import play.libs.F;
 import play.mvc.PathBindable;
+import play.mvc.QueryStringBindable;
+import utils.Validation.EAN;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * Created by Tomislav S. Mitic on 7/18/15.
  */
 public class Product implements PathBindable<Product>, QueryStringBindable<Product> {
+
+    public static class EanValidator extends Constraints.Validator<String> {
+
+        @Override
+        public boolean isValid(String ean) {
+            return ean != null &&
+                    Pattern.compile("^[0-9]{13}$")
+                            .matcher(ean).matches();
+        }
+
+        @Override
+        public F.Tuple<String, Object[]> getErrorMessageKey() {
+            return new F.Tuple<>(
+                    "error.invalid.ean", new Object[]{});
+        }
+    }
 
     private static List<Product> products;
 
@@ -28,6 +46,7 @@ public class Product implements PathBindable<Product>, QueryStringBindable<Produ
     }
 
     @Constraints.Required
+    @EAN
     public String ean;
 
     @Constraints.Required
@@ -36,6 +55,8 @@ public class Product implements PathBindable<Product>, QueryStringBindable<Produ
     public String description;
 
     public List<Tag> tags = new LinkedList<>();
+
+    public byte[] picture;
 
     public Product() {}
 

@@ -4,12 +4,33 @@
 
 @main("Product form") {
     <h1>Product form</h1>
-    @helper.form(action = routes.Products.save()) {
+    @helper.form(action = routes.Products.save(), 'enctype -> "multipart/form-data") {
+
+        <div class="control-group">
+            <div class="controls">
+                @if(productForm.errors().size() != 0) {
+                    <p>Please fix the following errors<ul>
+                    @for(error <- productForm.errors() ) {
+                        <li>@error._2.get(0).messages.get(0)</li>
+                    }
+                    <ul></p>
+                }
+            </div>
+        </div>
+
         <fieldset>
             <legend>Product (@productForm("name").valueOr("New"))</legend>
             @helper.inputText(productForm("ean"), 'label -> "EAN")
             @helper.inputText(productForm("name"), 'label -> "Name")
             @helper.textarea(productForm("description"), 'label -> "Description")
+            @helper.inputFile(productForm("picture"))
+            @if(!productForm("picture").valueOr("").isEmpty()) {
+                <div class="control-group">
+                    <div class="controls">
+                        <img style="position: relative; left: 50pc; height: 80px" src="/picture/@productForm("ean").value" />
+                    </div>
+                </div>
+            }
         </fieldset>
         <div class="control-group">
             <div class="controls">
