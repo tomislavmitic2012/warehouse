@@ -2,16 +2,14 @@ package models;
 
 import org.apache.commons.lang3.StringUtils;
 import play.data.validation.Constraints;
+import play.db.ebean.Model;
 import play.libs.F;
 import play.mvc.PathBindable;
 import play.mvc.QueryStringBindable;
 import utils.DateFormat;
 import utils.Validation.EAN;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -19,7 +17,7 @@ import java.util.regex.Pattern;
  * Created by Tomislav S. Mitic on 7/18/15.
  */
 @Entity
-public class Product implements PathBindable<Product>, QueryStringBindable<Product> {
+public class Product extends Model implements PathBindable<Product>, QueryStringBindable<Product> {
 
     public static class EanValidator extends Constraints.Validator<String> {
 
@@ -65,12 +63,13 @@ public class Product implements PathBindable<Product>, QueryStringBindable<Produ
     @DateFormat("yyyy-MM-dd")
     public Date peremptionDate = new Date();
 
-    @ManyToMany
+//    @ManyToMany
     public List<Tag> tags = new LinkedList<>();
 
+    @Column(length = 4080)
     public byte[] picture;
 
-    @OneToMany(mappedBy = "product")
+//    @OneToMany(mappedBy = "product")
     public List<StockItem> stockItems;
 
     public Product() {}
@@ -107,11 +106,6 @@ public class Product implements PathBindable<Product>, QueryStringBindable<Produ
 
     public static boolean remove(Product product) {
         return products.remove(product);
-    }
-
-    public void save() {
-        products.remove(findByEan(this.ean));
-        products.add(this);
     }
 
     @Override
