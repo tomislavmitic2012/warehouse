@@ -52,18 +52,19 @@ public class Products extends Controller {
     }
 
     public static Result save() {
+        Http.MultipartFormData body = request().body().asMultipartFormData();
         Form<Product> boundForm = productForm.bindFromRequest();
         if (boundForm.hasErrors()) {
             flash("error", "Please correct the form below.");
             return badRequest(details.render(boundForm));
         }
+
         Product product = boundForm.get();
 
-        // TODO you need to keep track of the previous product somehow
-        Http.MultipartFormData body = request().body().asMultipartFormData();
         Http.MultipartFormData.FilePart part = body.getFile("picture");
         if (part != null) {
             File picture = part.getFile();
+
             try {
                 product.picture = Files.toByteArray(picture);
             } catch (IOException e) {
@@ -77,9 +78,17 @@ public class Products extends Controller {
                 tags.add(Tag.findById(tag.id));
             }
         });
+
         product.tags = tags;
-        product.save();
+
+        if (product.id == null) {
+            product.save();
+        } else {
+            product.update();
+        }
+
         flash("success", String.format("Successfully added product %s", product));
+
         return redirect(routes.Products.list(1));
     }
 
@@ -88,7 +97,7 @@ public class Products extends Controller {
         if (product == null) {
             return notFound(String.format("Product %s does not exist.", ean));
         }
-        Product.remove(product);
+        product.delete();
         return redirect(routes.Products.list(1));
     }
 

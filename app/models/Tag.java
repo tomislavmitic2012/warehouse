@@ -5,6 +5,7 @@ import play.db.ebean.Model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,23 +18,11 @@ public class Tag extends Model {
 
     private static List<Tag> tags = new LinkedList<>();
 
-    static {
-        tags.add(new Tag(1L, "lightweight",
-                Product.findByName("paperclips 1")));
-        tags.add(new Tag(2L, "metal",
-                Product.findByName("paperclips")));
-        tags.add(new Tag(3L, "plastic",
-                Product.findByName("paperclips")));
+    public static Tag findById(Long id) {
+        return find.byId(id);
     }
 
-    public static Tag findById(Long id) {
-        for (Tag tag : tags) {
-            if (tag.id == id) {
-                return tag;
-            }
-        }
-        return null;
-    }
+    public static Finder<Long, Tag> find = new Finder<>(Long.class, Tag.class);
 
     @Id
     public Long id;
@@ -41,7 +30,7 @@ public class Tag extends Model {
     @Constraints.Required
     public String name;
 
-//    @ManyToMany(mappedBy = "tags")
+    @ManyToMany(mappedBy = "tags")
     public List<Product> products;
 
     public Tag() {

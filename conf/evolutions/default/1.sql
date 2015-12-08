@@ -20,7 +20,7 @@ create table product (
   description               varchar(255),
   date                      timestamp,
   peremption_date           timestamp,
-  picture                   varbinary(4080),
+  picture                   blob,
   constraint pk_product primary key (id))
 ;
 
@@ -45,6 +45,12 @@ create table warehouse (
   constraint pk_warehouse primary key (id))
 ;
 
+
+create table product_tag (
+  product_id                     bigint not null,
+  tag_id                         bigint not null,
+  constraint pk_product_tag primary key (product_id, tag_id))
+;
 create sequence address_seq;
 
 create sequence product_seq;
@@ -64,6 +70,10 @@ create index ix_warehouse_address_3 on warehouse (address_id);
 
 
 
+alter table product_tag add constraint fk_product_tag_product_01 foreign key (product_id) references product (id) on delete restrict on update restrict;
+
+alter table product_tag add constraint fk_product_tag_tag_02 foreign key (tag_id) references tag (id) on delete restrict on update restrict;
+
 # --- !Downs
 
 SET REFERENTIAL_INTEGRITY FALSE;
@@ -71,6 +81,8 @@ SET REFERENTIAL_INTEGRITY FALSE;
 drop table if exists address;
 
 drop table if exists product;
+
+drop table if exists product_tag;
 
 drop table if exists stock_item;
 

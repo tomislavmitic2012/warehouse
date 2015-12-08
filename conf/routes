@@ -12,7 +12,7 @@ GET           /products             controllers.Products.details(ean: models.Pro
 DELETE        /products/:ean        controllers.Products.delete(ean: String)
 GET           /picture/:ean         controllers.Products.picture(ean: String)
 
-
+GET           /stockitems/          controllers.StockItems.index()
 
 # Map static resources from the /public folder to the /assets URL path
 GET           /assets/*file         controllers.Assets.at(path="/public", file)

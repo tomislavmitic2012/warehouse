@@ -20,6 +20,7 @@
 
         <fieldset>
             <legend>Product (@productForm("name").valueOr("New"))</legend>
+            <input type="hidden" value="@productForm("id").valueOr("")" name="id"/>
             @helper.inputText(productForm("ean"), 'label -> "EAN")
             @helper.inputText(productForm("name"), 'label -> "Name")
             @helper.textarea(productForm("description"), 'label -> "Description")

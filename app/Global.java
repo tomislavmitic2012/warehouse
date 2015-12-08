@@ -1,13 +1,18 @@
+import com.avaje.ebean.Ebean;
+import models.Tag;
 import play.Application;
 import play.GlobalSettings;
 import play.data.format.Formatters;
+import play.libs.Yaml;
 import utils.AnnotationDateFormatter;
 
 import java.lang.annotation.Annotation;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Created by Tom Mitic on 10/26/15.
@@ -40,5 +45,17 @@ public class Global extends GlobalSettings {
         });
 
         Formatters.register(Date.class, new AnnotationDateFormatter());
+
+        InitialData.insert(app);
+    }
+
+    static class InitialData {
+
+        public static void insert(Application app) {
+            if (Ebean.find(Tag.class).findRowCount() == 0) {
+                Map<String, List<Object>> all = (Map<String, List<Object>>) Yaml.load("initial-data.yml");
+                Ebean.save(all.get("tags"));
+            }
+        }
     }
 }

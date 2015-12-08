@@ -37,14 +37,7 @@ public class Product extends Model implements PathBindable<Product>, QueryString
 
     private static List<Product> products;
 
-    static {
-        products = new ArrayList<>();
-        products.add(new Product("1111111111111", "Paperclips 1", "Paperclips description 1"));
-        products.add(new Product("2222222222222", "Paperclips 2", "Paperclips description "));
-        products.add(new Product("3333333333333", "Paperclips 3", "Paperclips description 3"));
-        products.add(new Product("4444444444444", "Paperclips 4", "Paperclips description 4"));
-        products.add(new Product("5555555555555", "Paperclips 5", "Paperclips description 5"));
-    }
+    public static Finder<Long, Product> find = new Finder<>(Long.class, Product.class);
 
     @Id
     public Long id;
@@ -63,13 +56,13 @@ public class Product extends Model implements PathBindable<Product>, QueryString
     @DateFormat("yyyy-MM-dd")
     public Date peremptionDate = new Date();
 
-//    @ManyToMany
+    @ManyToMany
     public List<Tag> tags = new LinkedList<>();
 
-    @Column(length = 4080)
+    @Lob
     public byte[] picture;
 
-//    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product")
     public List<StockItem> stockItems;
 
     public Product() {}
@@ -80,30 +73,6 @@ public class Product extends Model implements PathBindable<Product>, QueryString
         this.description = description;
     }
 
-    public static List<Product> findAll() {
-        return new ArrayList<>(products);
-    }
-
-    public static Product findByEan(String ean) {
-        for (Product candidate : products) {
-            if (candidate.ean.equals(ean)) {
-                return candidate;
-            }
-        }
-        return null;
-    }
-
-    public static List<Product> findByName(String term) {
-        final List<Product> results = new ArrayList<>();
-        for (Product candidate : products) {
-            if (StringUtils.containsIgnoreCase(candidate.name, term)) {
-                results.add(candidate);
-            }
-        }
-
-        return results;
-    }
-
     public static boolean remove(Product product) {
         return products.remove(product);
     }
@@ -111,6 +80,14 @@ public class Product extends Model implements PathBindable<Product>, QueryString
     @Override
     public String toString() {
         return String.format("%s - %s", ean, name);
+    }
+
+    public static Product findByEan(String ean) {
+        return find.where().eq("ean", ean).findUnique();
+    }
+
+    public static List<Product> findAll() {
+        return find.all();
     }
 
     @Override
