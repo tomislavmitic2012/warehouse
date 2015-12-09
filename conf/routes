@@ -4,7 +4,7 @@
 
 # Product warehouse URLs
 GET           /                     controllers.Products.index
-GET           /products/            controllers.Products.list(page: Integer ?= 1)
+GET           /products/            controllers.Products.list(page: Integer ?= 0)
 POST          /products/            controllers.Products.save()
 GET           /products/new         controllers.Products.newProduct()
 GET           /products/:ean        controllers.Products.details(ean: models.Product)

@@ -1,5 +1,6 @@
 package models;
 
+import com.avaje.ebean.Page;
 import org.apache.commons.lang3.StringUtils;
 import play.data.validation.Constraints;
 import play.db.ebean.Model;
@@ -88,6 +89,14 @@ public class Product extends Model implements PathBindable<Product>, QueryString
 
     public static List<Product> findAll() {
         return find.all();
+    }
+
+    public static Page<Product> find(int page) {
+        return find.where()
+                .orderBy("id asc")
+                .findPagingList(10)
+                .setFetchAhead(true)
+                .getPage(page);
     }
 
     @Override

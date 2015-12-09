@@ -1,5 +1,6 @@
 package controllers;
 
+import com.avaje.ebean.Page;
 import com.google.common.io.Files;
 import interceptors.Catch;
 import models.Product;
@@ -29,15 +30,11 @@ public class Products extends Controller {
     private static final Form<Product> productForm = form(Product.class);
 
     public static Result index() {
-        return redirect(routes.Products.list(1));
+        return redirect(routes.Products.list(0));
     }
 
     public static Result list(Integer page) {
-        List<Product> products = Product.findAll();
-        List<String> accept = Arrays.asList(request().getHeader("Accept").split(","));
-        if (accept.contains("text/plain")) {
-            return ok(StringUtils.join(products, "\n"));
-        }
+        Page<Product> products = Product.find(page);
         return ok(list.render(products));
     }
 
