@@ -35,7 +35,7 @@ public class Products extends Controller {
 
     public static Result list(Integer page) {
         Page<Product> products = Product.find(page);
-        return ok(list.render(products));
+        return ok(views.html.catalog.render(products));
     }
 
     public static Result newProduct() {
